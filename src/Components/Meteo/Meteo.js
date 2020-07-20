@@ -1,5 +1,10 @@
 import React from "react";
 import "./Meteo.css";
+import Header from "./Header";
+import Search from "./Search";
+import ComingDays from "./ComingDays";
+import DetailedDay from "./DetailedDay";
+//import Spinner from "../Spinner/Spinner";
 
 class Meteo extends React.Component {
 	constructor(props) {
@@ -14,7 +19,12 @@ class Meteo extends React.Component {
 	}
 
 	launchRequest() {
-		this.setState({ isLoaded: false });
+		this.setState({
+			isLoaded: false,
+			error: false,
+			meteo: null,
+			errorMsg: "",
+		});
 		fetch(
 			"https://www.prevision-meteo.ch/services/json/" +
 				this.state.inputContent
@@ -52,7 +62,7 @@ class Meteo extends React.Component {
 		if (error) {
 			return (
 				<div className="Meteo">
-					<h1>METEO</h1>
+					<Header />
 					<label>Saisissez une ville : </label>{" "}
 					<form
 						onSubmit={() => {
@@ -60,6 +70,7 @@ class Meteo extends React.Component {
 						}}
 					>
 						<input
+							className="search-field"
 							onChange={this.handleInputContent}
 							value={this.state.inputContent}
 						></input>
@@ -71,11 +82,15 @@ class Meteo extends React.Component {
 				</div>
 			);
 		} else if (!isLoaded) {
-			return <div>Chargement…</div>;
+			return (
+				<div className="Meteo">
+					<p>Chargement…</p>
+				</div>
+			);
 		} else if (isLoaded && meteo === null) {
 			return (
 				<div className="Meteo">
-					<h1>METEO</h1>
+					<Header />
 					<label>Saisissez une ville : </label>{" "}
 					<form
 						onSubmit={() => {
@@ -83,6 +98,7 @@ class Meteo extends React.Component {
 						}}
 					>
 						<input
+							className="search-field"
 							onChange={this.handleInputContent}
 							value={this.state.inputContent}
 						></input>
@@ -95,7 +111,7 @@ class Meteo extends React.Component {
 		} else if (isLoaded && error !== true) {
 			return (
 				<div className="Meteo">
-					<h1>METEO</h1>
+					<Header />
 					<label>Saisissez une ville : </label>{" "}
 					<form
 						onSubmit={() => {
@@ -103,6 +119,7 @@ class Meteo extends React.Component {
 						}}
 					>
 						<input
+							className="search-field"
 							onChange={this.handleInputContent}
 							value={this.state.inputContent}
 						></input>
@@ -121,6 +138,16 @@ class Meteo extends React.Component {
 						<p>{meteo.current_condition.tmp}°C</p>
 						<p>{meteo.current_condition.humidity}% d'humidité</p>
 						<p>{meteo.current_condition.wnd_spd} km/h de vent</p>
+					</div>
+					<div className="group-days">
+						<ComingDays day={this.state.meteo.fcst_day_0} />
+						<ComingDays day={this.state.meteo.fcst_day_1} />
+						<ComingDays day={this.state.meteo.fcst_day_2} />
+						<ComingDays day={this.state.meteo.fcst_day_3} />
+						<ComingDays day={this.state.meteo.fcst_day_4} />
+					</div>
+					<div>
+						<DetailedDay day={this.state.meteo.fcst_day_0} />
 					</div>
 				</div>
 			);

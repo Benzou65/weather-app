@@ -1,9 +1,10 @@
 .Meteo {
-	border-color: cyan;
+	/* border-color: cyan;
 	border-width: 2px;
 	border-radius: 1em;
 	padding: 2em;
-	border: solid;
+	border: solid; */
+	/* height: 80vh; */
 }
 
 .button {
@@ -18,7 +19,7 @@
 	font-size: 2vmin;
 }
 
-input {
+.search-field {
 	height: 2em;
 	margin: 0.5em;
 	padding: 0 0.5em 0 0.5em;
@@ -30,4 +31,12 @@ input {
 
 img {
 	max-height: 4em;
+	margin: 0 0.5em 0 0.5em;
+}
+
+.group-days {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
 }

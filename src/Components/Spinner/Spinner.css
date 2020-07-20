@@ -1,0 +1,12 @@
+.Spinner-logo {
+	animation: Spinner-logo-spin infinite 2s linear;
+}
+
+@keyframes Spinner-logo-spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
