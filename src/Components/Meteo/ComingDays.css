@@ -1,8 +1,12 @@
 .ComingDays {
-	border-color: cyan;
-	border-width: 2px;
+	border-color: white;
+	border-width: 3px;
 	border-radius: 1em;
 	padding: 0.5em;
 	border: solid;
-	margin: 0.5em;
+	margin: 1em;
+}
+
+.ComingDays > p {
+	margin-top: 0;
 }

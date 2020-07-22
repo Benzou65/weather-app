@@ -3,10 +3,23 @@
 	flex-direction: row;
 	flex-wrap: wrap;
 	justify-content: center;
-	border-color: cyan;
-	border-width: 2px;
+	border-color: white;
+	border-width: 3px;
 	border-radius: 1em;
 	padding: 0.5em;
 	border: solid;
-	margin: 0.5em;
+	margin: 1em;
+}
+
+.Day {
+	display: inline;
+	justify-self: center;
+	background-color: #282c34;
+	position: relative;
+	top: 35px;
+	padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+	border: solid;
+	border-color: white;
+	border-width: 3px;
+	border-radius: 0.75rem;
 }

@@ -1,5 +1,8 @@
 # Weather app
 
+Trying to use Search.js but ending with fetch and state problems.
+TypeError: Failed to fetch - Sometime JSON request works on console.log
+
 _Coded in React using service API from https://www.prevision-meteo.ch/_
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

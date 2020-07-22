@@ -1,10 +1,8 @@
 import React from "react";
 import "./Meteo.css";
-import Header from "./Header";
 import Search from "./Search";
 import ComingDays from "./ComingDays";
 import DetailedDay from "./DetailedDay";
-//import Spinner from "../Spinner/Spinner";
 
 class Meteo extends React.Component {
 	constructor(props) {
@@ -15,7 +13,11 @@ class Meteo extends React.Component {
 			errorMsg: "",
 			isLoaded: true,
 			meteo: null,
+			selectedDay: "0",
 		};
+		this.handleInputContent = this.handleInputContent.bind(this);
+		this.launchRequest = this.launchRequest.bind(this);
+		this.selectDay = this.selectDay.bind(this);
 	}
 
 	launchRequest() {
@@ -25,16 +27,23 @@ class Meteo extends React.Component {
 			meteo: null,
 			errorMsg: "",
 		});
-		fetch(
+		console.log("c'est parti launched !" + this.state.inputContent);
+		const apiUrl =
 			"https://www.prevision-meteo.ch/services/json/" +
-				this.state.inputContent
-		)
-			.then((result) => result.json())
+			this.state.inputContent;
+		fetch(apiUrl)
+			.then((result) => {
+				if (result.ok) {
+					console.log("Result oK !");
+					return result.json();
+				}
+				throw Error(result.statusText);
+			})
 			.then((data) => {
+				console.log(data);
 				this.setState({
 					meteo: data,
 				});
-				console.log(this.state.meteo);
 				if (this.state.meteo.errors) {
 					this.setState({
 						error: true,
@@ -53,105 +62,57 @@ class Meteo extends React.Component {
 			});
 	}
 
-	handleInputContent = (event) => {
+	selectDay(props) {
+		this.setState({
+			selectedDay: props,
+		});
+	}
+
+	handleInputContent(event) {
 		this.setState({ inputContent: event.target.value });
-	};
+	}
 
 	render() {
-		const { error, errorMsg, isLoaded, meteo } = this.state;
-		if (error) {
-			return (
-				<div className="Meteo">
-					<Header />
-					<label>Saisissez une ville : </label>{" "}
-					<form
-						onSubmit={() => {
-							this.launchRequest();
-						}}
-					>
-						<input
-							className="search-field"
-							onChange={this.handleInputContent}
-							value={this.state.inputContent}
-						></input>
-						<button type="submit" className="button">
-							Envoyer
-						</button>
-					</form>
-					<p>Erreur : {errorMsg}</p>
-				</div>
-			);
-		} else if (!isLoaded) {
-			return (
-				<div className="Meteo">
-					<p>Chargement…</p>
-				</div>
-			);
-		} else if (isLoaded && meteo === null) {
-			return (
-				<div className="Meteo">
-					<Header />
-					<label>Saisissez une ville : </label>{" "}
-					<form
-						onSubmit={() => {
-							this.launchRequest();
-						}}
-					>
-						<input
-							className="search-field"
-							onChange={this.handleInputContent}
-							value={this.state.inputContent}
-						></input>
-						<button type="submit" className="button">
-							Envoyer
-						</button>
-					</form>
-				</div>
-			);
-		} else if (isLoaded && error !== true) {
-			return (
-				<div className="Meteo">
-					<Header />
-					<label>Saisissez une ville : </label>{" "}
-					<form
-						onSubmit={() => {
-							this.launchRequest();
-						}}
-					>
-						<input
-							className="search-field"
-							onChange={this.handleInputContent}
-							value={this.state.inputContent}
-						></input>
-						<button type="submit" className="button">
-							Envoyer
-						</button>
-					</form>
+		const { error, isLoaded, meteo } = this.state;
+		return (
+			<div>
+				<Search
+					inputHandler={this.handleInputContent}
+					clickHandler={this.launchRequest}
+					inputContent={this.state.inputContent}
+				/>
+				<p>Test transfert du state : {this.state.inputContent}</p>
+				{isLoaded && error === false && meteo !== null && (
 					<div>
-						<h2>{meteo.city_info.name}</h2>
-						<img
-							src={meteo.current_condition.icon_big}
-							alt={meteo.current_condition.condition}
-							title={meteo.current_condition.condition}
-						/>
-
-						<p>{meteo.current_condition.tmp}°C</p>
-						<p>{meteo.current_condition.humidity}% d'humidité</p>
-						<p>{meteo.current_condition.wnd_spd} km/h de vent</p>
+						<div>
+							<h2>{meteo.city_info.name}</h2>
+							<img
+								src={meteo.current_condition.icon_big}
+								alt={meteo.current_condition.condition}
+								title={meteo.current_condition.condition}
+							/>
+							<p>{meteo.current_condition.tmp}°C</p>
+							<p>
+								{meteo.current_condition.humidity}% d'humidité
+							</p>
+							<p>
+								{meteo.current_condition.wnd_spd} km/h de vent
+							</p>
+						</div>
+						<div className="group-days">
+							<ComingDays day={this.state.meteo.fcst_day_0} />
+							<ComingDays day={this.state.meteo.fcst_day_1} />
+							<ComingDays day={this.state.meteo.fcst_day_2} />
+							<ComingDays day={this.state.meteo.fcst_day_3} />
+							<ComingDays day={this.state.meteo.fcst_day_4} />
+						</div>
+						<div>
+							<DetailedDay day={this.state.meteo.fcst_day_0} />
+						</div>
 					</div>
-					<div className="group-days">
-						<ComingDays day={this.state.meteo.fcst_day_0} />
-						<ComingDays day={this.state.meteo.fcst_day_1} />
-						<ComingDays day={this.state.meteo.fcst_day_2} />
-						<ComingDays day={this.state.meteo.fcst_day_3} />
-						<ComingDays day={this.state.meteo.fcst_day_4} />
-					</div>
-					<div>
-						<DetailedDay day={this.state.meteo.fcst_day_0} />
-					</div>
-				</div>
-			);
-		}
+				)}
+			</div>
+		);
 	}
 }
 
