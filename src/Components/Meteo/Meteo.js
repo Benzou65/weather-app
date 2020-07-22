@@ -1,36 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Meteo.css";
-import Search from "./Search";
 import ComingDays from "./ComingDays";
 import DetailedDay from "./DetailedDay";
 
-class Meteo extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			inputContent: "",
-			error: false,
-			errorMsg: "",
-			isLoaded: true,
-			meteo: null,
-			selectedDay: "0",
-		};
-		this.handleInputContent = this.handleInputContent.bind(this);
-		this.launchRequest = this.launchRequest.bind(this);
-		this.selectDay = this.selectDay.bind(this);
-	}
+const Meteo = () => {
+	const [inputContent, setInputContent] = useState("");
+	const [error, setError] = useState(false);
+	const [errorMsg, setErrorMsg] = useState("");
+	const [isLoaded, setIsLoaded] = useState(true);
+	const [meteo, setMeteo] = useState(null);
+	const [selectedDay, setSelectedDay] = useState("0");
 
-	launchRequest() {
-		this.setState({
-			isLoaded: false,
-			error: false,
-			meteo: null,
-			errorMsg: "",
-		});
-		console.log("c'est parti launched !" + this.state.inputContent);
+	const selectDay = (props) => {
+		setSelectedDay(props);
+	};
+
+	const launchRequest = () => {
+		setIsLoaded(false);
+		setError(false);
+		setMeteo(null);
+		setErrorMsg("");
+
+		console.log("c'est parti launched !" + inputContent);
 		const apiUrl =
-			"https://www.prevision-meteo.ch/services/json/" +
-			this.state.inputContent;
+			"https://www.prevision-meteo.ch/services/json/" + inputContent;
 		fetch(apiUrl)
 			.then((result) => {
 				if (result.ok) {
@@ -41,79 +34,118 @@ class Meteo extends React.Component {
 			})
 			.then((data) => {
 				console.log(data);
-				this.setState({
-					meteo: data,
-				});
-				if (this.state.meteo.errors) {
-					this.setState({
-						error: true,
-						errorMsg: this.state.meteo.errors[0].text,
-					});
+				setMeteo(data);
+				if (meteo.errors) {
+					setError(true);
+					setErrorMsg(meteo.errors[0].text);
 				} else {
-					this.setState({
-						error: false,
-					});
+					setError(false);
 				}
-				this.setState({ isLoaded: true });
+				setIsLoaded(true);
 			})
 			.catch((error) => {
-				this.setState({ error: true });
+				setError(true);
 				console.log(error);
 			});
-	}
+	};
 
-	selectDay(props) {
-		this.setState({
-			selectedDay: props,
-		});
-	}
+	const handleInputContent = (event) => {
+		setInputContent(event.target.value);
+	};
 
-	handleInputContent(event) {
-		this.setState({ inputContent: event.target.value });
-	}
-
-	render() {
-		const { error, isLoaded, meteo } = this.state;
+	if (error) {
 		return (
-			<div>
-				<Search
-					inputHandler={this.handleInputContent}
-					clickHandler={this.launchRequest}
-					inputContent={this.state.inputContent}
-				/>
-				<p>Test transfert du state : {this.state.inputContent}</p>
-				{isLoaded && error === false && meteo !== null && (
-					<div>
-						<div>
-							<h2>{meteo.city_info.name}</h2>
-							<img
-								src={meteo.current_condition.icon_big}
-								alt={meteo.current_condition.condition}
-								title={meteo.current_condition.condition}
-							/>
-							<p>{meteo.current_condition.tmp}°C</p>
-							<p>
-								{meteo.current_condition.humidity}% d'humidité
-							</p>
-							<p>
-								{meteo.current_condition.wnd_spd} km/h de vent
-							</p>
-						</div>
-						<div className="group-days">
-							<ComingDays day={this.state.meteo.fcst_day_0} />
-							<ComingDays day={this.state.meteo.fcst_day_1} />
-							<ComingDays day={this.state.meteo.fcst_day_2} />
-							<ComingDays day={this.state.meteo.fcst_day_3} />
-							<ComingDays day={this.state.meteo.fcst_day_4} />
-						</div>
-						<div>
-							<DetailedDay day={this.state.meteo.fcst_day_0} />
-						</div>
-					</div>
-				)}
+			<div className="Meteo">
+				<label>Saisissez une ville : </label>
+				<form onSubmit={launchRequest}>
+					<input
+						className="search-field"
+						onChange={handleInputContent}
+						value={inputContent}
+					></input>
+					<button className="button">Envoyer</button>
+				</form>
+				<p>Erreur : {errorMsg}</p>
 			</div>
 		);
 	}
-}
+	if (!isLoaded) {
+		return (
+			<div className="Meteo">
+				<p>Chargement…</p>
+			</div>
+		);
+	} else if (isLoaded && meteo === null) {
+		return (
+			<div className="Meteo">
+				<label>Saisissez une ville : </label>{" "}
+				<form onSubmit={launchRequest}>
+					<input
+						className="search-field"
+						onChange={handleInputContent}
+						value={inputContent}
+					></input>
+					<button className="button">Envoyer</button>
+				</form>
+			</div>
+		);
+	} else if (isLoaded && error !== true) {
+		return (
+			<div className="Meteo">
+				<div className="Top-bar">
+					<div className="Search-bar">
+						<form onSubmit={launchRequest}>
+							<label>Saisissez une ville : </label>
+							<div>
+								<input
+									className="search-field"
+									onChange={handleInputContent}
+									value={inputContent}
+								></input>
+								<button className="button">Envoyer</button>
+							</div>
+						</form>
+					</div>
+					<div className="Current-condition">
+						<h2>{meteo.city_info.name}</h2>
+						<img
+							src={meteo.current_condition.icon_big}
+							alt={meteo.current_condition.condition}
+							title={meteo.current_condition.condition}
+						/>
 
+						<p>{meteo.current_condition.tmp}°C</p>
+
+						<p>{meteo.current_condition.humidity}% d'humidité</p>
+						<p>{meteo.current_condition.wnd_spd} km/h de vent</p>
+					</div>
+				</div>
+				<div className="group-days">
+					<ComingDays day={meteo.fcst_day_0} d="0" cli={selectDay} />
+					<ComingDays day={meteo.fcst_day_1} d="1" cli={selectDay} />
+					<ComingDays day={meteo.fcst_day_2} d="2" cli={selectDay} />
+					<ComingDays day={meteo.fcst_day_3} d="3" cli={selectDay} />
+					<ComingDays day={meteo.fcst_day_4} d="4" cli={selectDay} />
+				</div>
+				<div>
+					{selectedDay === "0" && (
+						<DetailedDay day={meteo.fcst_day_0} />
+					)}
+					{selectedDay === "1" && (
+						<DetailedDay day={meteo.fcst_day_1} />
+					)}
+					{selectedDay === "2" && (
+						<DetailedDay day={meteo.fcst_day_2} />
+					)}
+					{selectedDay === "3" && (
+						<DetailedDay day={meteo.fcst_day_3} />
+					)}
+					{selectedDay === "4" && (
+						<DetailedDay day={meteo.fcst_day_4} />
+					)}
+				</div>
+			</div>
+		);
+	}
+};
 export default Meteo;
