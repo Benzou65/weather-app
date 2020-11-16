@@ -13,7 +13,7 @@ class Meteo extends React.Component {
 			errorMsg: "",
 			isLoaded: true,
 			meteo: null,
-			selectedDay: "0",
+			selectedDay: 0,
 		};
 		this.handleInputContent = this.handleInputContent.bind(this);
 		this.launchRequest = this.launchRequest.bind(this);
@@ -21,27 +21,28 @@ class Meteo extends React.Component {
 	}
 
 	// Launch request to the prevision-meteo.ch API service and put JSON into state
-	launchRequest() {
+	launchRequest(e) {
+		e.preventDefault();
 		this.setState({
 			isLoaded: false,
 			error: false,
 			meteo: null,
 			errorMsg: "",
 		});
-		console.log("Launch ok ! " + this.state.inputContent);
+		// console.log("Launch ok ! " + this.state.inputContent);
 		const apiUrl =
 			"https://www.prevision-meteo.ch/services/json/" +
 			this.state.inputContent;
 		fetch(apiUrl)
 			.then((result) => {
 				if (result.ok) {
-					console.log("Result ok !");
+					// console.log("Result ok !");
 					return result.json();
 				}
 				throw Error(result.statusText);
 			})
 			.then((data) => {
-				console.log(data);
+				// console.log(data);
 				this.setState({
 					meteo: data,
 				});
@@ -59,14 +60,15 @@ class Meteo extends React.Component {
 			})
 			.catch((error) => {
 				this.setState({ error: true });
-				console.log(error);
+				// console.log(error);
 			});
 	}
 
 	// Handle selected day from ComingDays components (not implemented yet)
-	selectDay(props) {
+	selectDay(e) {
+		// console.log(e);
 		this.setState({
-			selectedDay: props,
+			selectedDay: e,
 		});
 	}
 
@@ -155,26 +157,43 @@ class Meteo extends React.Component {
 						</div>
 					</div>
 					<div className="group-days">
-						<ComingDays day={this.state.meteo.fcst_day_0} />
-						<ComingDays day={this.state.meteo.fcst_day_1} />
-						<ComingDays day={this.state.meteo.fcst_day_2} />
-						<ComingDays day={this.state.meteo.fcst_day_3} />
-						<ComingDays day={this.state.meteo.fcst_day_4} />
+						<ComingDays
+							day={this.state.meteo.fcst_day_0}
+							onClick={this.selectDay.bind(this, 0)}
+						/>
+
+						<ComingDays
+							day={this.state.meteo.fcst_day_1}
+							onClick={this.selectDay.bind(this, 1)}
+						/>
+
+						<ComingDays
+							day={this.state.meteo.fcst_day_2}
+							onClick={this.selectDay.bind(this, 2)}
+						/>
+						<ComingDays
+							day={this.state.meteo.fcst_day_3}
+							onClick={this.selectDay.bind(this, 3)}
+						/>
+						<ComingDays
+							day={this.state.meteo.fcst_day_4}
+							onClick={this.selectDay.bind(this, 4)}
+						/>
 					</div>
 					<div>
-						{this.state.selectedDay === "0" && (
+						{this.state.selectedDay === 0 && (
 							<DetailedDay day={this.state.meteo.fcst_day_0} />
 						)}
-						{this.state.selectedDay === "1" && (
+						{this.state.selectedDay === 1 && (
 							<DetailedDay day={this.state.meteo.fcst_day_1} />
 						)}
-						{this.state.selectedDay === "2" && (
+						{this.state.selectedDay === 2 && (
 							<DetailedDay day={this.state.meteo.fcst_day_2} />
 						)}
-						{this.state.selectedDay === "3" && (
+						{this.state.selectedDay === 3 && (
 							<DetailedDay day={this.state.meteo.fcst_day_3} />
 						)}
-						{this.state.selectedDay === "4" && (
+						{this.state.selectedDay === 4 && (
 							<DetailedDay day={this.state.meteo.fcst_day_4} />
 						)}
 					</div>

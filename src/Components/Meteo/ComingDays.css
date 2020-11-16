@@ -10,3 +10,19 @@
 .ComingDays > p {
 	margin-top: 0;
 }
+
+button {
+	cursor: pointer;
+	color: white;
+	background-color: transparent;
+	font-size: 1em;
+	outline: none;
+	transition: 0.1s;
+}
+button:focus,
+button:hover {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+button:hover {
+	transform: translateY(-2px);
+}
