@@ -2,8 +2,8 @@
   "name": "meteo",
   "version": "0.1.0",
   "engines": {
-    "node": "16.19.0",
-    "npm": "8.19.2"
+    "node": "18.18.2",
+    "npm": "9.8.1"
   },
   "private": true,
   "dependencies": {
@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "npm install -g serve && serve -s build"
